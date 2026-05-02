@@ -1,95 +1,54 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>K-arita Bonita</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-  <h1>K-arita Bonita</h1>
-  <p class="subtitulo">Skincare coreano para una piel sana, glowy y hermosa ✨</p>
-
-<div id="infoPedido"></div>
-
-  <!-- FILTROS -->
-  <div style="text-align:center;">
-    <select id="filtroCategoria">
-      <option value="">Categoría</option>
-      <option value="cleanser">Cleanser</option>
-      <option value="toner">Toner</option>
-      <option value="serum">Serum</option>
-      <option value="sunscreen">Sunscreen</option>
-    </select>
-
-    <select id="filtroPiel">
-      <option value="">Tipo de piel</option>
-      <option value="grasa">Grasa</option>
-      <option value="seca">Seca</option>
-      <option value="mixta">Mixta</option>
-      <option value="sensible">Sensible</option>
-    </select>
-
-    <select id="filtroProblema">
-      <option value="">Problema</option>
-      <option value="acne">Acné</option>
-      <option value="manchas">Manchas</option>
-      <option value="hidratacion">Hidratación</option>
-    </select>
-
-    <select id="filtroOferta">
-      <option value="">Ofertas</option>
-      <option value="si">Solo ofertas</option>
-    </select>
-
-    <br>
-    <button onclick="limpiarFiltros()">Limpiar filtros</button>
-  </div>
-
-<div id="topProductos"></div>
-
-  <!-- RUTINA -->
-  <div id="rutina"></div>
-
-  <!-- RECOMENDADOS -->
-  <div id="recomendados"></div>
-
-  <!-- PRODUCTOS -->
-  <div id="productos"></div>
-
-  <!-- BOTÓN WHATSAPP CONSULTA -->
-  <a id="btnWhatsApp">💬</a>
-
-  <!-- BOTÓN CARRITO -->
-<div id="btnCarrito" onclick="abrirCarrito()">
-  🛒
-  <span id="contadorCarrito">0</span>
-</div>
-
-  <!-- MODAL CARRITO -->
-  <div id="modalCarrito" class="modal">
-    <div class="modal-content">
-      <span id="cerrarCarrito">✖</span>
-      <h2>Tu carrito</h2>
-      <div id="listaCarrito"></div>
-      <button onclick="enviarWhatsApp()">Pedir por WhatsApp</button>
-    </div>
-  </div>
-
-<div id="modalDetalle" class="modal">
-  <div class="modal-content">
-    <span id="cerrarDetalle">✖</span>
-    <div id="contenidoDetalle"></div>
-  </div>
-</div>
-
-  <!-- TOAST -->
-  <div id="toast"></div>
-
-  <script src="script.js"></script>
-
-</body>
-</html>
-
+[
+  {
+    "nombre": "Tea-trica BHA Foam",
+    "categoria": "cleanser",
+    "piel": "acne",
+    "problema": "acne",
+    "oferta": "no",
+    "precio": 260,
+    "imagen": "https://i.imgur.com/d12404T.jpeg",
+    "whatsapp": "https://wa.me/5210000000000?text=Quiero%20Tea-trica%20BHA",
+    "top": "si",
+    "descripcion": "Limpia profundamente sin resecar, ideal para piel sensible",
+    "uso": "Aplicar sobre rostro húmedo, masajear y enjuagar. Usar mañana y noche"
+  },
+  {
+    "nombre": "Tone Brightening Gel Foam",
+    "categoria": "cleanser",
+    "piel": "sensible",
+    "problema": "manchas",
+    "oferta": "no",
+    "precio": 240,
+    "imagen": "https://i.imgur.com/KznLzU1.jpeg",
+    "whatsapp": "https://wa.me/5210000000000?text=Quiero%20Sun%20Serum",
+    "top": "si",
+    "descripcion": "Limpia profundamente sin resecar, ideal para piel sensible",
+    "uso": "Aplicar sobre rostro húmedo, masajear y enjuagar. Usar mañana y noche"
+  },
+  {
+    "nombre": "prueba",
+    "categoria": "serum",
+    "piel": "grasa",
+    "problema": "acne",
+    "oferta": "si",
+    "precio": 240,
+    "imagen": "https://i.imgur.com/KznLzU1.jpeg",
+    "whatsapp": "https://wa.me/5210000000000?text=Quiero%20Sun%20Serum",
+    "top": "no",
+    "descripcion": "Limpia profundamente sin resecar, ideal para piel sensible",
+    "uso": "Aplicar sobre rostro húmedo, masajear y enjuagar. Usar mañana y noche"
+  },
+    {
+    "nombre": "prueba acne",
+    "categoria": "toner",
+    "piel": "grasa",
+    "problema": "acne",
+    "oferta": "si",
+    "precio": 240,
+    "imagen": "https://i.imgur.com/KznLzU1.jpeg",
+    "whatsapp": "https://wa.me/5210000000000?text=Quiero%20Sun%20Serum",
+    "top":"no",
+    "descripcion": "Limpia profundamente sin resecar, ideal para piel sensible",
+    "uso": "Aplicar sobre rostro húmedo, masajear y enjuagar. Usar mañana y noche"
+  }  
+]
