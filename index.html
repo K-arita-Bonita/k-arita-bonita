@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>K-arita Bonita</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a id="btnCarrito">
+  🛒 <span id="contadorCarrito">0</span>
+</a>
+<h1>K-arita Bonita</h1>
+
+<!-- FILTROS -->
+<div>
+  <select id="filtroCategoria">
+    <option value="">Categoría</option>
+    <option value="cleanser">Cleanser</option>
+    <option value="toner">Toner</option>
+    <option value="serum">Serum</option>
+    <option value="sun">Protector solar</option>
+  </select>
+
+  <select id="filtroPiel">
+    <option value="">Tipo de piel</option>
+    <option value="acne">Acné</option>
+    <option value="grasa">Grasa</option>
+    <option value="seca">Seca</option>
+    <option value="sensible">Sensible</option>
+  </select>
+
+  <select id="filtroProblema">
+    <option value="">Problema</option>
+    <option value="acne">Acné</option>
+    <option value="manchas">Manchas</option>
+    <option value="hidratacion">Hidratación</option>
+  </select>
+
+  <select id="filtroOferta">
+    <option value="">Ofertas</option>
+    <option value="si">En oferta</option>
+  </select>
+</div>
+
+<!-- PRODUCTOS -->
+<div id="productos"></div>
+
+<!-- BOTÓN WHATSAPP -->
+<a id="btnWhatsApp" href="javascript:void(0)">💬</a>
+<script src="script.js"></script>
+
+<div id="toast"></div>
+
+<div id="modalCarrito" class="modal">
+  <div class="modal-content">
+    
+    <span id="cerrarCarrito">✖</span>
+
+    <h2>Tu carrito</h2>
+    <div id="listaCarrito"></div>
+
+    <button onclick="enviarWhatsApp()">Pedir por WhatsApp</button>
+  </div>
+</div>
+
+</body>
+</html>
