@@ -28,36 +28,53 @@ function mostrarProductos(lista) {
       ? `<span class="badge">OFERTA</span>`
       : "";
 
-    let etiquetaExtra = "";
+let etiquetas = [];
 
-    if (p.problema === "acne") {
-      etiquetaExtra = "✨ Ideal para acné";
-    } else if (p.problema === "hidratacion") {
-      etiquetaExtra = "💧 Hidratación";
-    } else if (p.problema === "manchas") {
-      etiquetaExtra = "🌟 Manchas";
-    }
+if (p.problema.includes("Acné")) etiquetas.push("💚 Acné");
+if (p.problema.includes("Hidratación")) etiquetas.push("💧 Hidratación");
+if (p.problema.includes("Manchas")) etiquetas.push("✨ Manchas");
+if (p.problema.includes("Poros dilatados")) etiquetas.push("🔍 Poros");
+
+if (p.problema.includes("Irritación")) etiquetas.push("🌿 Calma");
+if (p.problema.includes("Reparación")) etiquetas.push("🛠️ Reparación");
+if (p.problema.includes("Anti-edad")) etiquetas.push("⏳ Anti-edad");
+if (p.problema.includes("Firmeza")) etiquetas.push("💪 Firmeza");
+if (p.problema.includes("Líneas finas")) etiquetas.push("📉 Líneas");
+if (p.problema.includes("Ojeras")) etiquetas.push("👁️ Ojeras");
+if (p.problema.includes("Textura")) etiquetas.push("🧪 Textura");
+if (p.problema.includes("Limpieza profunda")) etiquetas.push("🧼 Limpieza");
+
+let etiquetaExtra = etiquetas.map(e => `<span class="tag">${e}</span>`).join(" ");
 
     contenedor.innerHTML += `
       <div class="card">
         ${etiquetaOferta}
         <img src="${p.imagen}">
-        <h3>${p.nombre}</h3>
-        <p class="precio">$${p.precio}</p>
-        <p class="info">${p.piel} | ${p.problema}</p>
+       <h3>${p.nombre}</h3>
+       <p class="info"><strong>${p.marca}</strong></p>
+<p class="precio">
+  ${p.oferta === "si" && p.precioAnterior 
+    ? `<span class="precio-anterior">$${p.precioAnterior}</span>` 
+    : ""}
+  $${p.precio}
+</p>
+       <p class="info">
+        ${p.piel.join(", ")} | ${p.problema.join(", ")}
+        </p>
+        <p class="info"><strong>${p.cantidad}</strong></p>
         <p class="mensaje">${generarMensaje(p)}</p>
-        <p class="tag">${etiquetaExtra}</p>
-
+       <div>${etiquetaExtra}</div>
 <div class="botones-card">
-  <button onclick="agregarAlCarrito(${index})">
+
+<button onclick="agregarAlCarrito(${productos.indexOf(p)})">
     🛒
   </button>
 
-  <button onclick="pedirProducto(${index})">
+<button onclick="pedirProducto(${productos.indexOf(p)})">
     💬 Pedir
   </button>
-  <button onclick="verDetalle(${index})">
-  Ver más
+<button onclick="verDetalle(${productos.indexOf(p)})">
+Ver más
 </button>
 </div>
       </div>
@@ -95,12 +112,19 @@ function filtrar() {
   const piel = document.getElementById('filtroPiel').value;
   const problema = document.getElementById('filtroProblema').value;
   const oferta = document.getElementById('filtroOferta').value;
+  const marca = document.getElementById('filtroMarca').value;
 
   const filtrados = productos.filter(p => {
-    return (!cat || p.categoria === cat) &&
-           (!piel || p.piel === piel) &&
-           (!problema || p.problema === problema) &&
-           (!oferta || p.oferta === oferta);
+
+    const matchCategoria = !cat || p.categoria === cat;
+    const matchOferta = !oferta || p.oferta === oferta;
+
+    const matchPiel = !piel || p.piel.includes(piel);
+    const matchProblema = !problema || p.problema.includes(problema);
+
+    const matchMarca = !marca || p.marca === marca;
+
+    return matchCategoria && matchPiel && matchProblema && matchOferta && matchMarca;
   });
 
   mostrarProductos(filtrados);
@@ -114,6 +138,7 @@ function limpiarFiltros() {
   document.getElementById('filtroPiel').value = "";
   document.getElementById('filtroProblema').value = "";
   document.getElementById('filtroOferta').value = "";
+  document.getElementById('filtroMarca').value = "";
 
   mostrarProductos(productos);
   document.getElementById("recomendados").innerHTML = "";
@@ -131,8 +156,10 @@ function mostrarRecomendados(lista) {
     return;
   }
 
-  const top = lista.slice(0, 3);
-
+const top = lista
+  .filter(p => p.top === "si")
+  .slice(0, 3);
+  
   let html = "<h2>✨ Recomendados para ti</h2>";
 
   top.forEach(p => {
@@ -153,34 +180,127 @@ function mostrarRutina(lista) {
 
   if (!contenedor) return;
 
+  const piel = document.getElementById('filtroPiel').value;
+  const problema = document.getElementById('filtroProblema').value;
+
   if (lista.length === productos.length) {
     contenedor.innerHTML = "";
     return;
   }
 
-  const cleanser = lista.find(p => p.categoria === "cleanser");
-  const toner = lista.find(p => p.categoria === "toner");
-  const serum = lista.find(p => p.categoria === "serum");
+  function elegirProducto(categoria) {
 
-  if (!cleanser || !toner || !serum) {
+    // 1️⃣ piel + problema
+    let prod = lista.find(p =>
+      p.categoria === categoria &&
+      (!piel || p.piel.includes(piel)) &&
+      (!problema || p.problema.includes(problema))
+    );
+    if (prod) return prod;
+
+    // 2️⃣ solo piel
+    prod = lista.find(p =>
+      p.categoria === categoria &&
+      (!piel || p.piel.includes(piel))
+    );
+    if (prod) return prod;
+
+    // 3️⃣ solo problema
+    prod = lista.find(p =>
+      p.categoria === categoria &&
+      (!problema || p.problema.includes(problema))
+    );
+    if (prod) return prod;
+
+    // 4️⃣ top
+    prod = lista.find(p =>
+      p.categoria === categoria &&
+      p.top === "si"
+    );
+    if (prod) return prod;
+
+    // 5️⃣ cualquiera
+    return lista.find(p => p.categoria === categoria);
+  }
+
+  const rutina = {
+    cleanser: elegirProducto("cleanser"),
+    toner: elegirProducto("toner"),
+    serum: elegirProducto("sérum") || elegirProducto("serum"),
+    cream: elegirProducto("cream"),
+    sunscreen: elegirProducto("sunscreen"),
+    mask: elegirProducto("mask") // 👈 opcional
+  };
+
+  // 🔥 VALIDACIÓN mínima (sin esto no hay rutina útil)
+  if (!rutina.cleanser || !rutina.toner || !rutina.serum) {
     contenedor.innerHTML = "";
     return;
   }
 
-  contenedor.innerHTML = `
-  <h2>🧴 Rutina recomendada</h2>
+  // 🧠 lógica para mostrar mascarilla SOLO si tiene sentido
+  let usarMascarilla = false;
 
-  <div class="rutina-box">
-    <div>${cleanser.nombre}</div>
-    <div>${toner.nombre}</div>
-    <div>${serum.nombre}</div>
+  if (
+    problema === "Acné" ||
+    problema === "Manchas" ||
+    problema === "Irritación" ||
+    problema === "Hidratación"
+  ) {
+    usarMascarilla = true;
+  }
+
+  contenedor.innerHTML = `
+    <h2>🧴 Rutina recomendada</h2>
+
+<div class="rutina-box">
+
+  <div class="rutina-item">
+    <img src="${rutina.cleanser?.imagen}" />
+    <span>🧼 ${rutina.cleanser?.nombre || "-"}</span>
   </div>
 
-  <button onclick="agregarRutina()">
-    Agregar rutina completa 🛒
-  </button>
-`;
+  <div class="rutina-item">
+    <img src="${rutina.toner?.imagen}" />
+    <span>💧 ${rutina.toner?.nombre || "-"}</span>
+  </div>
+
+  <div class="rutina-item">
+    <img src="${rutina.serum?.imagen}" />
+    <span>✨ ${rutina.serum?.nombre || "-"}</span>
+  </div>
+
+  <div class="rutina-item">
+    <img src="${rutina.cream?.imagen}" />
+    <span>🧴 ${rutina.cream?.nombre || "-"}</span>
+  </div>
+
+  <div class="rutina-item">
+    <img src="${rutina.sunscreen?.imagen}" />
+    <span>☀️ ${rutina.sunscreen?.nombre || "-"}</span>
+  </div>
+
+  ${
+    usarMascarilla && rutina.mask
+      ? `
+      <div class="rutina-item">
+        <img src="${rutina.mask.imagen}" />
+        <span>🧖 ${rutina.mask.nombre}</span>
+      </div>
+      `
+      : ""
+  }
+
+</div>
+
+    <button onclick="agregarRutinaFiltrada()">
+      Agregar rutina completa 🛒
+    </button>
+  `;
 }
+
+
+
 
 // CARRITO
 document.addEventListener("DOMContentLoaded", function () {
@@ -308,17 +428,45 @@ function enviarConsulta() {
   window.location.href = url;
 }
 
-function agregarRutina() {
-  const cleanser = productos.find(p => p.categoria === "cleanser");
-  const toner = productos.find(p => p.categoria === "toner");
-  const serum = productos.find(p => p.categoria === "serum");
+function agregarRutinaFiltrada() {
 
-  if (cleanser) carrito.push(cleanser);
-  if (toner) carrito.push(toner);
-  if (serum) carrito.push(serum);
+  const piel = document.getElementById('filtroPiel').value;
+  const problema = document.getElementById('filtroProblema').value;
+
+  function elegirProducto(categoria) {
+    return productos.find(p =>
+      p.categoria === categoria &&
+      (!piel || p.piel.includes(piel)) &&
+      (!problema || p.problema.includes(problema))
+    )
+    || productos.find(p => p.categoria === categoria);
+  }
+
+  const rutina = [
+    elegirProducto("cleanser"),
+    elegirProducto("toner"),
+    elegirProducto("sérum") || elegirProducto("serum"),
+    elegirProducto("cream"),
+    elegirProducto("sunscreen")
+  ];
+
+  // mascarilla opcional
+  if (
+    problema === "Acné" ||
+    problema === "Manchas" ||
+    problema === "Irritación" ||
+    problema === "Hidratación"
+  ) {
+    const mask = elegirProducto("mask");
+    if (mask) rutina.push(mask);
+  }
+
+  rutina.forEach(p => {
+    if (p) carrito.push(p);
+  });
 
   actualizarContador();
-  mostrarToast("Rutina agregada 💖");
+  mostrarToast("Rutina completa agregada 💖");
 }
 
 function mostrarTopProductos() {
@@ -393,19 +541,56 @@ function mostrarInfoPedido() {
 }
 
 function generarMensaje(p) {
-  if (p.problema === "acne") {
-    return "💚 Ayuda a reducir brotes y controlar grasa";
+
+  if (p.problema.includes("Acné")) {
+    return "💚 Reduce brotes y controla grasa";
   }
 
-  if (p.problema === "manchas") {
-    return "✨ Ideal para unificar el tono de la piel";
+  if (p.problema.includes("Manchas")) {
+    return "✨ Unifica el tono y aporta glow";
   }
 
-  if (p.problema === "hidratacion") {
-    return "💧 Aporta hidratación profunda y glow";
+  if (p.problema.includes("Hidratación")) {
+    return "💧 Hidratación profunda sin pesadez";
   }
 
-  return "🌿 Recomendado para tu rutina";
+  if (p.problema.includes("Poros dilatados")) {
+    return "🔍 Minimiza la apariencia de poros";
+  }
+
+  if (p.problema.includes("Irritación")) {
+    return "🌿 Calma y reduce enrojecimiento";
+  }
+
+  if (p.problema.includes("Reparación")) {
+    return "🛠️ Repara la barrera de la piel";
+  }
+
+  if (p.problema.includes("Anti-edad")) {
+    return "⏳ Mejora signos de la edad";
+  }
+
+  if (p.problema.includes("Firmeza")) {
+    return "💪 Mejora elasticidad y firmeza";
+  }
+
+  if (p.problema.includes("Líneas finas")) {
+    return "📉 Suaviza líneas finas";
+  }
+
+  if (p.problema.includes("Ojeras")) {
+    return "👁️ Ilumina y reduce ojeras";
+  }
+
+  if (p.problema.includes("Textura")) {
+    return "🧪 Mejora la textura de la piel";
+  }
+
+  if (p.problema.includes("Limpieza profunda")) {
+    return "🧼 Limpieza profunda de poros";
+  }
+
+  return "🌿 Ideal para tu rutina";
 }
 
 function verDetalle(index) {
@@ -421,7 +606,7 @@ function verDetalle(index) {
     <p>${p.descripcion}</p>
 
     <p><strong>🧴 ¿Cómo usarlo?</strong></p>
-    <p>${p.uso}</p>
+    <p>${p.uso && p.uso !== "0" ? p.uso : "Aplicar según rutina básica"}</p>
 
     <button onclick="pedirProducto(${index})">
       💬 Pedir por WhatsApp
@@ -443,3 +628,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+document.getElementById('filtroMarca').addEventListener('change', filtrar);
