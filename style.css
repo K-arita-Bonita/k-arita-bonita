@@ -147,7 +147,7 @@ button {
   z-index: 1000; /* 🔥 MENOR QUE BOTONES */
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(255, 192, 203, 0.25); /* rosa pastel transparente */
   pointer-events: none; /* 🔥 NO BLOQUEA */
 }
 
@@ -160,12 +160,24 @@ button {
   width: 90%;
   max-width: 400px;
 
-  background: white;
+  background: #fff0f6; /* rosita muy suave */
   padding: 20px;
-  border-radius: 15px;
+  border-radius: 20px;
 
   z-index: 1001;
+
+  /* 🔥 esto hace que resalte sin ser agresivo */
+  box-shadow: 0 10px 30px rgba(214, 51, 132, 0.15);
+  border: 1px solid rgba(214, 51, 132, 0.15);
+
+  max-height: 80vh;
+  overflow-y: auto;
 }
+
+.modal-content h3 {
+  color: #d63384;
+}
+
 
 .modal-content {
   max-height: 80vh;
@@ -235,12 +247,7 @@ button {
 }
 
 .rutina-box {
-  display: flex;
-  justify-content: space-around;
-  background: white;
-  padding: 10px;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  flex-wrap: wrap;
 }
 
 .rutina-box div {
@@ -272,8 +279,10 @@ button {
 }
 
 .botones-card {
+  margin-top: auto;
   display: flex;
-  gap: 5px;
+  justify-content: center;
+  gap: 8px;
 }
 
 .botones-card button {
@@ -293,4 +302,61 @@ button {
 
 button:hover {
   opacity: 0.85;
+}
+
+.logo-text {
+  font-family: 'DM Serif Display', serif;
+  text-align: center;
+
+  font-size: 42px;
+  margin: 20px 0 5px;
+
+  background: linear-gradient(135deg, #ff7aa8, #d63384);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  letter-spacing: 1px;
+}
+
+.precio-anterior {
+  text-decoration: line-through;
+  color: red;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.rutina-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.rutina-item {
+  width: 70px;
+  text-align: center;
+  font-size: 10px;
+}
+
+.rutina-item img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  margin-bottom: 4px;
+}
+
+.rutina-item span {
+  display: block;
+}
+
+.rutina-item img {
+  border-radius: 50%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
