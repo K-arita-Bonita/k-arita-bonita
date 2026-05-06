@@ -5,48 +5,96 @@
   <title>K-arita Bonita</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&display=swap" rel="stylesheet">
 </head>
 
 <body>
 
-  <h1>K-arita Bonita</h1>
+  <h1 class="logo-text">K-arita Bonita</h1>
   <p class="subtitulo">Skincare coreano para una piel sana, glowy y hermosa ✨</p>
 
 <div id="infoPedido"></div>
 
   <!-- FILTROS -->
-  <div style="text-align:center;">
-    <select id="filtroCategoria">
-      <option value="">Categoría</option>
-      <option value="cleanser">Cleanser</option>
-      <option value="toner">Toner</option>
-      <option value="serum">Serum</option>
-      <option value="sunscreen">Sunscreen</option>
-    </select>
+<!-- FILTROS -->
+<div style="text-align:center;">
 
-    <select id="filtroPiel">
-      <option value="">Tipo de piel</option>
-      <option value="grasa">Grasa</option>
-      <option value="seca">Seca</option>
-      <option value="mixta">Mixta</option>
-      <option value="sensible">Sensible</option>
-    </select>
+  <select id="filtroCategoria">
+    <option value="">Categoría</option>
+    <option value="cleanser">Limpiador</option>
+    <option value="toner">Toner</option>
+    <option value="sérum">Sérum</option>
+    <option value="cream">Crema</option>
+    <option value="eyecream">Contorno de ojos</option>
+    <option value="sunscreen">Protector solar</option>
+    <option value="mask">Mascarilla</option>
+    <option value="hair">Cabello y Pestañas</option>
+    <option value="kit">Kits</option>
+  </select>
+  
+  <select id="filtroMarca">
+  <option value="">Marca</option>
+  <option value="ABIB">ABIB</option>
+  <option value="AESTURA">AESTURA</option>
+  <option value="ANUA">ANUA</option>
+  <option value="ARENCIA">ARENCIA</option>
+  <option value="AXIS-Y">AXIS-Y</option>
+  <option value="BEAUTY OF JOSEON">BEAUTY OF JOSEON</option>
+  <option value="CELIMAX">CELIMAX</option>
+  <option value="CENTELLIAN 24+">CENTELLIAN 24+</option>
+  <option value="COSRX">COSRX</option>
+  <option value="DR.ALTHEA">DR.ALTHEA</option>
+  <option value="EQQUALBERRY">EQQUALBERRY</option>
+  <option value="INNISFREE">INNISFREE</option>
+  <option value="K-SECRET">K-SECRET</option>
+  <option value="MEDICUBE">MEDICUBE</option>
+  <option value="MIXSOON">MIXSOON</option>
+  <option value="NUMBUZIN">NUMBUZIN</option>
+  <option value="PURITO">PURITO</option>
+  <option value="ROUND LAB">ROUND LAB</option>
+  <option value="SHISEIDO">SHISEIDO</option>
+  <option value="SKIN 1004">SKIN 1004</option>
+  <option value="TOCOBO">TOCOBO</option>
 
-    <select id="filtroProblema">
-      <option value="">Problema</option>
-      <option value="acne">Acné</option>
-      <option value="manchas">Manchas</option>
-      <option value="hidratacion">Hidratación</option>
-    </select>
+</select>
+  
+  <select id="filtroPiel">
+    <option value="">Tipo de piel</option>
+    <option value="Grasa">Grasa</option>
+    <option value="Seca">Seca</option>
+    <option value="Mixta">Mixta</option>
+    <option value="Sensible">Sensible</option>
+    <option value="Madura">Madura</option>
+    <option value="Labios">Labios</option>
+    <option value="Todo tipo de piel">Todo tipo de piel</option>
+  </select>
 
-    <select id="filtroOferta">
-      <option value="">Ofertas</option>
-      <option value="si">Solo ofertas</option>
-    </select>
+  <select id="filtroProblema">
+    <option value="">Problema</option>
+    <option value="Acné">Acné</option>
+    <option value="Manchas">Manchas</option>
+    <option value="Hidratación">Hidratación</option>
+    <option value="Poros dilatados">Poros dilatados</option>
+    <option value="Irritación">Irritación</option>
+    <option value="Reparación">Reparación</option>
+    <option value="Anti-edad">Anti-edad</option>
+    <option value="Firmeza">Firmeza</option>
+    <option value="Líneas finas">Líneas finas</option>
+    <option value="Ojeras">Ojeras</option>
+    <option value="Textura">Textura</option>
+    <option value="Limpieza profunda">Limpieza profunda</option>
 
-    <br>
-    <button onclick="limpiarFiltros()">Limpiar filtros</button>
-  </div>
+  </select>
+
+  <select id="filtroOferta">
+    <option value="">Ofertas</option>
+    <option value="si">Solo ofertas</option>
+  </select>
+
+  <br>
+  <button onclick="limpiarFiltros()">Limpiar filtros</button>
+
+</div>
 
 <div id="topProductos"></div>
 
