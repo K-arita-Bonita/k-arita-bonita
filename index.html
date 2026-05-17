@@ -15,6 +15,24 @@
 
 <div id="infoPedido"></div>
 
+<div class="busqueda-container">
+
+  <input
+    type="text"
+    id="busqueda"
+    placeholder="🔍 Buscar productos..."
+    oninput="filtrar()"
+  >
+
+  <span class="limpiar-busqueda" onclick="limpiarBusqueda()">
+    ✕
+  </span>
+
+</div>
+
+  >
+</div>
+
   <!-- FILTROS -->
 <!-- FILTROS -->
 <div style="text-align:center;">
@@ -72,7 +90,7 @@
   <select id="filtroProblema">
     <option value="">Problema</option>
     <option value="Acné">Acné</option>
-    <option value="Manchas">Manchas</option>
+    <option value="Manchas/Tono uniforme">Manchas/Tono uniforme</option>
     <option value="Hidratación">Hidratación</option>
     <option value="Poros dilatados">Poros dilatados</option>
     <option value="Irritación">Irritación</option>
@@ -140,5 +158,4 @@
 
 </body>
 </html>
-
 
