@@ -24,15 +24,49 @@ function mostrarProductos(lista) {
 
   lista.forEach((p, index) => {
 
-    const etiquetaOferta = p.oferta === "si"
-      ? `<span class="badge">OFERTA</span>`
-      : "";
+const tieneOferta =
+  p.oferta === "si" ||
+  (p.tamaños &&
+    p.tamaños.some(t => t.oferta === "si"));
 
+const agotado =
+  p.stock === "agotado" ||
+  (p.tamaños &&
+    p.tamaños.every(t => t.stock === "agotado"));
+
+let etiquetaOferta = "";
+let etiquetaStock = "";
+
+if (p.tamaños) {
+
+  const primera = p.tamaños[0];
+
+  if (primera.oferta === "si") {
+    etiquetaOferta = `<span class="badge">OFERTA</span>`;
+  }
+
+  if (primera.stock === "agotado") {
+    etiquetaStock = `<span class="badge stock-agotado">⏳ Agotado</span>`;
+  }
+
+} else {
+
+  if (p.oferta === "si") {
+    etiquetaOferta = `<span class="badge">OFERTA</span>`;
+  }
+
+  if (p.stock === "agotado") {
+    etiquetaStock = `<span class="badge stock-agotado">⏳ Agotado</span>`;
+  }
+
+}
+
+  
 let etiquetas = [];
 
 if (p.problema.includes("Acné")) etiquetas.push("💚 Acné");
 if (p.problema.includes("Hidratación")) etiquetas.push("💧 Hidratación");
-if (p.problema.includes("Manchas")) etiquetas.push("✨ Manchas");
+if (p.problema.includes("Manchas/Tono uniforme")) etiquetas.push("✨ Manchas");
 if (p.problema.includes("Poros dilatados")) etiquetas.push("🔍 Poros");
 
 if (p.problema.includes("Irritación")) etiquetas.push("🌿 Calma");
@@ -48,45 +82,155 @@ let etiquetaExtra = etiquetas.map(e => `<span class="tag">${e}</span>`).join(" "
 
     contenedor.innerHTML += `
       <div class="card">
-        ${etiquetaOferta}
+        <div class="badges-dinamicos">
+  ${etiquetaOferta}
+  ${etiquetaStock}
+</div>
+
         <img src="${p.imagen}">
        <h3>${p.nombre}</h3>
        <p class="info"><strong>${p.marca}</strong></p>
 <p class="precio">
-  ${p.oferta === "si" && p.precioAnterior 
-    ? `<span class="precio-anterior">$${p.precioAnterior}</span>` 
-    : ""}
-  $${p.precio}
+  ${
+    p.tamaños
+      ? `
+        <span class="precio-dinamico">
+          $${p.tamaños[0].precio}
+        </span>
+      `
+      : `
+        ${p.oferta === "si" && p.precioAnterior
+          ? `<span class="precio-anterior">$${p.precioAnterior}</span>`
+          : ""}
+        <span class="precio-dinamico">
+          $${p.precio}
+        </span>
+      `
+  }
 </p>
+${p.tamaños ? `
+<select
+  id="tamano-${productos.indexOf(p)}"
+  class="selector-tamano"
+  onchange="actualizarPrecio(this, ${productos.indexOf(p)})">
+
+  ${p.tamaños.map((t, i) => `
+    <option value="${i}">
+      ${t.nombre} - $${t.precio}
+    </option>
+  `).join("")}
+
+</select>
+` : ""}
+
        <p class="info">
         ${p.piel.join(", ")} | ${p.problema.join(", ")}
         </p>
-        <p class="info"><strong>${p.cantidad}</strong></p>
+        ${
+  !p.tamaños
+    ? `<p class="info"><strong>${p.cantidad}</strong></p>`
+    : ""
+}
         <p class="mensaje">${generarMensaje(p)}</p>
        <div>${etiquetaExtra}</div>
 <div class="botones-card">
 
-<button onclick="agregarAlCarrito(${productos.indexOf(p)})">
-    🛒
-  </button>
+${
+  p.stock === "agotado"
+  ? `
+    <button class="btn-agotado">
+      ⏳ Agotado
+    </button>
+  `
+  : `
+    <button onclick="agregarAlCarrito(${productos.indexOf(p)})">
+      🛒
+    </button>
 
-<button onclick="pedirProducto(${productos.indexOf(p)})">
-    💬 Pedir
-  </button>
+    <button onclick="pedirProducto(${productos.indexOf(p)})">
+      💬 Pedir
+    </button>
+  `
+}
+
 <button onclick="verDetalle(${productos.indexOf(p)})">
-Ver más
+  Ver más
 </button>
+
 </div>
       </div>
     `;
+    if (p.tamaños) {
+
+  setTimeout(() => {
+
+    const select = document.getElementById(`tamano-${productos.indexOf(p)}`);
+
+    if (!select) return;
+
+    // 🔥 si está activo el filtro de ofertas
+    const filtroOferta =
+      document.getElementById("filtroOferta").value;
+
+    if (filtroOferta === "si") {
+
+      // buscar tamaño en oferta
+      const indexOferta = p.tamaños.findIndex(
+        t => t.oferta === "si"
+      );
+
+      // cambiar automáticamente
+      if (indexOferta !== -1) {
+        select.value = indexOferta;
+      }
+
+    }
+
+    actualizarPrecio(select, productos.indexOf(p));
+
+  }, 0);
+
+}
   });
 }
 
 // AGREGAR AL CARRITO
 function agregarAlCarrito(index) {
+
   const producto = productos[index];
-  carrito.push(producto);
-  mostrarToast(producto.nombre + " agregado");
+
+  let productoFinal = { ...producto };
+
+  // 🔥 si tiene tamaños
+  if (producto.tamaños) {
+
+    const select = document.getElementById(`tamano-${index}`);
+
+    const opcion = producto.tamaños[select.value];
+
+    productoFinal.tamañoSeleccionado = opcion.nombre;
+    productoFinal.precioSeleccionado = opcion.precio;
+
+    if (opcion.oferta === "si") {
+      productoFinal.precioAnteriorSeleccionado = opcion.precioAnterior;
+    }
+
+  } else {
+
+    productoFinal.tamañoSeleccionado = producto.cantidad;
+    productoFinal.precioSeleccionado = producto.precio;
+
+  }
+
+  carrito.push(productoFinal);
+
+  mostrarToast(
+    producto.nombre +
+    " " +
+    (productoFinal.tamañoSeleccionado || "")
+    + " agregado"
+  );
+
   actualizarContador();
 }
 
@@ -108,23 +252,55 @@ document.getElementById('filtroProblema').addEventListener('change', filtrar);
 document.getElementById('filtroOferta').addEventListener('change', filtrar);
 
 function filtrar() {
+
   const cat = document.getElementById('filtroCategoria').value;
   const piel = document.getElementById('filtroPiel').value;
   const problema = document.getElementById('filtroProblema').value;
   const oferta = document.getElementById('filtroOferta').value;
   const marca = document.getElementById('filtroMarca').value;
 
+  const texto = document
+    .getElementById("busqueda")
+    .value
+    .toLowerCase();
+
   const filtrados = productos.filter(p => {
 
-    const matchCategoria = !cat || p.categoria === cat;
-    const matchOferta = !oferta || p.oferta === oferta;
+    const matchCategoria =
+      !cat || p.categoria === cat;
 
-    const matchPiel = !piel || p.piel.includes(piel);
-    const matchProblema = !problema || p.problema.includes(problema);
+    const matchOferta =
+  !oferta ||
 
-    const matchMarca = !marca || p.marca === marca;
+  p.oferta === oferta ||
 
-    return matchCategoria && matchPiel && matchProblema && matchOferta && matchMarca;
+  (
+    p.tamaños &&
+    p.tamaños.some(t => t.oferta === oferta)
+  );
+
+    const matchPiel =
+      !piel ||
+      p.piel.includes(piel) ||
+      p.piel.includes("Todo tipo de piel");
+
+    const matchProblema =
+      !problema || p.problema.includes(problema);
+
+    const matchMarca =
+      !marca || p.marca === marca;
+
+    const matchBusqueda =
+      !texto ||
+      p.nombre.toLowerCase().includes(texto) ||
+      p.marca.toLowerCase().includes(texto);
+
+    return matchCategoria &&
+           matchPiel &&
+           matchProblema &&
+           matchOferta &&
+           matchMarca &&
+           matchBusqueda;
   });
 
   mostrarProductos(filtrados);
@@ -139,7 +315,8 @@ function limpiarFiltros() {
   document.getElementById('filtroProblema').value = "";
   document.getElementById('filtroOferta').value = "";
   document.getElementById('filtroMarca').value = "";
-
+  document.getElementById('busqueda').value = "";
+  
   mostrarProductos(productos);
   document.getElementById("recomendados").innerHTML = "";
   document.getElementById("rutina").innerHTML = "";
@@ -335,11 +512,12 @@ function abrirCarrito() {
     let total = 0;
 
     carrito.forEach((p, index) => {
-      total += p.precio;
-
+      total += p.precioSeleccionado || p.precio;
       lista.innerHTML += `
         <div>
-          ${p.nombre} - $${p.precio}
+        ${p.nombre}
+${p.tamañoSeleccionado ? `(${p.tamañoSeleccionado})` : ""}
+- $${p.precioSeleccionado || p.precio}
           <button onclick="eliminarDelCarrito(${index})">❌</button>
         </div>
       `;
@@ -400,10 +578,11 @@ function enviarWhatsApp() {
   let mensaje = "Hola 💖 vi estos productos en K-arita Bonita y me interesan:\n";
 
   carrito.forEach(p => {
-    mensaje += `- ${p.nombre} ($${p.precio})\n`;
-  });
+   mensaje += `- ${p.nombre} ${  p.tamañoSeleccionado  ? "(" + p.tamañoSeleccionado + ")"   : ""
+} ($${p.precioSeleccionado || p.precio})\n`;
+});
 
-  const total = carrito.reduce((sum, p) => sum + p.precio, 0);
+  const total = carrito.reduce(  (sum, p) => sum + (p.precioSeleccionado || p.precio),  0);
   mensaje += `\nTotal: $${total}\n\n¿Me ayudas con disponibilidad? 💖`;
 
   const url = "https://api.whatsapp.com/send?phone=" 
@@ -418,7 +597,7 @@ function enviarWhatsApp() {
 function enviarConsulta() {
   const numero = "5214462399389";
 
-  const mensaje = "Hola 💖 vengo de K-arita Bonita y tengo una consulta";
+  const mensaje = "Hola 💖 vengo de K-arita Bonita y tengo una pregunta";
 
   const url = "https://api.whatsapp.com/send?phone=" 
               + numero 
@@ -453,7 +632,7 @@ function agregarRutinaFiltrada() {
   // mascarilla opcional
   if (
     problema === "Acné" ||
-    problema === "Manchas" ||
+    problema === "Manchas/Tono uniforme" ||
     problema === "Irritación" ||
     problema === "Hidratación"
   ) {
@@ -522,75 +701,174 @@ function mostrarInfoPedido() {
 
    mostrarInfoPedido();
    
-   function pedirProducto(index) {
+function pedirProducto(index) {
+
   const p = productos[index];
+
+  let tamaño = p.cantidad;
+  let precio = p.precio;
+
+  // 🔥 si tiene tamaños
+  if (p.tamaños) {
+
+    const select = document.getElementById(`tamano-${index}`);
+
+    const opcion = p.tamaños[select.value];
+
+    tamaño = opcion.nombre;
+    precio = opcion.precio;
+  }
 
   const numero = "5214462399389";
 
   let mensaje = "Hola 💖 me interesa este producto:\n\n";
+
   mensaje += `🧴 ${p.nombre}\n`;
-  mensaje += `💲 $${p.precio}\n\n`;
+
+  if (tamaño) {
+    mensaje += `📦 Tamaño: ${tamaño}\n`;
+  }
+
+  mensaje += `💲 $${precio}\n\n`;
+
   mensaje += "¿Me confirmas disponibilidad y tiempo de entrega? ✨";
 
-  const url = "https://api.whatsapp.com/send?phone="
-              + numero
-              + "&text="
-              + encodeURIComponent(mensaje);
+  const url =
+    "https://api.whatsapp.com/send?phone="
+    + numero
+    + "&text="
+    + encodeURIComponent(mensaje);
 
   window.location.href = url;
 }
 
 function generarMensaje(p) {
 
-  if (p.problema.includes("Acné")) {
+  // 🔥 tomar el primer problema del array
+  const problema = p.problema[0];
+
+  if (problema === "Acné") {
     return "💚 Reduce brotes y controla grasa";
   }
 
-  if (p.problema.includes("Manchas")) {
+  if (problema === "Manchas/Tono uniforme") {
     return "✨ Unifica el tono y aporta glow";
   }
 
-  if (p.problema.includes("Hidratación")) {
+  if (problema === "Hidratación") {
     return "💧 Hidratación profunda sin pesadez";
   }
 
-  if (p.problema.includes("Poros dilatados")) {
+  if (problema === "Poros dilatados") {
     return "🔍 Minimiza la apariencia de poros";
   }
 
-  if (p.problema.includes("Irritación")) {
+  if (problema === "Irritación") {
     return "🌿 Calma y reduce enrojecimiento";
   }
 
-  if (p.problema.includes("Reparación")) {
+  if (problema === "Reparación") {
     return "🛠️ Repara la barrera de la piel";
   }
 
-  if (p.problema.includes("Anti-edad")) {
+  if (problema === "Anti-edad") {
     return "⏳ Mejora signos de la edad";
   }
 
-  if (p.problema.includes("Firmeza")) {
+  if (problema === "Firmeza") {
     return "💪 Mejora elasticidad y firmeza";
   }
 
-  if (p.problema.includes("Líneas finas")) {
+  if (problema === "Líneas finas") {
     return "📉 Suaviza líneas finas";
   }
 
-  if (p.problema.includes("Ojeras")) {
+  if (problema === "Ojeras") {
     return "👁️ Ilumina y reduce ojeras";
   }
 
-  if (p.problema.includes("Textura")) {
+  if (problema === "Textura") {
     return "🧪 Mejora la textura de la piel";
   }
 
-  if (p.problema.includes("Limpieza profunda")) {
+  if (problema === "Limpieza profunda") {
     return "🧼 Limpieza profunda de poros";
   }
 
   return "🌿 Ideal para tu rutina";
+}
+
+function actualizarPrecio(select, index) {
+
+  const producto = productos[index];
+
+  const opcion = producto.tamaños[select.value];
+
+  const card = select.closest(".card");
+
+  // PRECIO
+  const precioHTML = `
+    ${
+      opcion.oferta === "si" && opcion.precioAnterior
+        ? `<span class="precio-anterior">$${opcion.precioAnterior}</span>`
+        : ""
+    }
+
+    <span class="precio-dinamico">
+      $${opcion.precio}
+    </span>
+  `;
+
+  card.querySelector(".precio").innerHTML = precioHTML;
+
+  // BADGES
+  let badgesHTML = "";
+
+  if (opcion.oferta === "si") {
+    badgesHTML += `<span class="badge">OFERTA</span>`;
+  }
+
+  if (opcion.stock === "agotado") {
+    badgesHTML += `
+      <span class="badge stock-agotado">
+        ⏳ Temporalmente Agotado
+      </span>
+    `;
+  }
+
+  card.querySelector(".badges-dinamicos").innerHTML = badgesHTML;
+
+  // BOTONES
+  const botones = card.querySelector(".botones-card");
+
+  if (opcion.stock === "agotado") {
+
+    botones.innerHTML = `
+      <button class="btn-agotado">
+        ⏳ Agotado
+      </button>
+
+      <button onclick="verDetalle(${index})">
+        Ver más
+      </button>
+    `;
+
+  } else {
+
+    botones.innerHTML = `
+      <button onclick="agregarAlCarrito(${index})">
+        🛒
+      </button>
+
+      <button onclick="pedirProducto(${index})">
+        💬 Pedir
+      </button>
+
+      <button onclick="verDetalle(${index})">
+        Ver más
+      </button>
+    `;
+  }
 }
 
 function verDetalle(index) {
@@ -630,3 +908,15 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById('filtroMarca').addEventListener('change', filtrar);
+
+function buscarProductos() {
+  filtrar();
+}
+
+function limpiarBusqueda() {
+
+  document.getElementById("busqueda").value = "";
+
+  filtrar();
+}
+
