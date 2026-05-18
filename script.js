@@ -4,18 +4,53 @@ let productos = [];
 let carrito = [];
 
 // CARGAR PRODUCTOS
-fetch('productos.json')
-  .then(res => res.json())
-  .then(data => {
-    productos = data.sort((a, b) => {
+const url =
+"https://docs.google.com/spreadsheets/d/e/2PACX-1vQ_3KXLcfc_Y_-ZX9fbtthxQF2FykLW8Hqax8Ws1OXAFqTsZOe1qZHVSDBqXJLp6F_anDNRgiczdx9m/pub?gid=982133858&single=true&output=csv";
+
+Papa.parse(url, {
+
+  download: true,
+  header: true,
+
+  complete: function(results) {
+
+    productos = results.data.map(p => ({
+
+      ...p,
+
+      categoria: p.categoria
+        ? p.categoria.trim().toLowerCase()
+        : "",
+
+      marca: p.marca
+        ? p.marca.trim().toLowerCase()
+        : "",
+
+      piel: p.piel
+        ? p.piel.split(",").map(x => x.trim())
+        : [],
+
+      problema: p.problema
+        ? p.problema.split(",").map(x => x.trim())
+        : []
+
+    }));
+
+    productos = productos.sort((a, b) => {
+
       if (a.oferta === "si") return -1;
       if (b.oferta === "si") return 1;
+
       return 0;
+
     });
 
     mostrarProductos(productos);
     mostrarTopProductos();
-  });
+
+  }
+
+});
 
 // MOSTRAR PRODUCTOS
 function mostrarProductos(lista) {
@@ -253,12 +288,18 @@ document.getElementById('filtroOferta').addEventListener('change', filtrar);
 
 function filtrar() {
 
-  const cat = document.getElementById('filtroCategoria').value;
+const cat = document
+  .getElementById('filtroCategoria')
+  .value
+  .toLowerCase();
   const piel = document.getElementById('filtroPiel').value;
   const problema = document.getElementById('filtroProblema').value;
   const oferta = document.getElementById('filtroOferta').value;
-  const marca = document.getElementById('filtroMarca').value;
-
+const marca = document
+  .getElementById('filtroMarca')
+  .value
+  .toLowerCase();
+  
   const texto = document
     .getElementById("busqueda")
     .value
