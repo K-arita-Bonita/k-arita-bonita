@@ -5,17 +5,9 @@
    "categoria": "cleanser",
    "piel": ["Grasa","Mixta"],
    "problema": ["Acné","Irritación"],
-   "tamaños":[
-     {
-     "nombre":"125ml",
-     "precio":260
-     },
-     {
-     "nombre":"Dúo 125ml",
-     "precio":500
-     }
-     ],
    "oferta": "no",
+   "precio":260,
+   "cantidad":"125ml",
    "stock":"disponible",
    "imagen": "https://i.imgur.com/d12404T.jpeg",
    "whatsapp": "https://wa.me/5210000000000?text=Quiero%20Tea-trica%20BHA",
